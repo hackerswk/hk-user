@@ -1,0 +1,20 @@
+{
+    "name": "stanleysie/hk-user",
+    "description": "Get service, roles, permissions of user.",
+    "type": "library",
+    "require": {
+        "php": "^7.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Stanleysie\\HkUser\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Stanley Sie",
+            "email": "swookon@gmail.com"
+        }
+    ]
+}
