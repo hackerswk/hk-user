@@ -28,6 +28,12 @@ class UserInfo
         $this->database = $db;
     }
 
+    /**
+     * get user info
+     * 
+     * @param $userID
+     * @return array
+     */
     public function getUserInfo($userID = null)
     {
         $sql = <<<EOF
@@ -64,6 +70,12 @@ EOF;
         return $result;
     }
 
+    /**
+     * get user service
+     * 
+     * @param $userID
+     * @return array
+     */
     public function getUserServices($userID = null)
     {
         $sql = <<<EOF
@@ -79,6 +91,12 @@ EOF;
         }
     }
 
+    /**
+     * get user roles
+     * 
+     * @param $userID
+     * @return array
+     */
     public function getUserRoles($userID = null)
     {
         $sql = <<<EOF
@@ -94,6 +112,12 @@ EOF;
         }
     }
 
+    /**
+     * get user permissions
+     * 
+     * @param $userID
+     * @return array
+     */
     public function getUserPermissions($userID = null)
     {
         $sql = <<<EOF
@@ -109,6 +133,12 @@ EOF;
         }
     }
 
+    /**
+     * get user account type
+     * 
+     * @param $type
+     * @return int
+     */
     public function userAccountType($type)
     {
         switch ($type) {
@@ -123,6 +153,12 @@ EOF;
         }
     }
 
+    /**
+     * get user provider type
+     * 
+     * @param $type
+     * @return int
+     */
     public function userProviderType($type)
     {
         switch ($type) {
@@ -139,6 +175,12 @@ EOF;
         }
     }
 
+    /**
+     * get user services
+     * 
+     * @param $data
+     * @return array
+     */
     public function userServices($data) {
         $returnData = [];
         if (empty($data)) {
@@ -339,6 +381,12 @@ EOF;
         }
     }
 
+    /**
+     * get user builder permission
+     * 
+     * @param $permissions
+     * @return array
+     */
     public function getUserBuilderPermission($permissions = [])
     {
         $returnData = new stdClass();
