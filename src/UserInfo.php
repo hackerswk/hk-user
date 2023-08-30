@@ -46,7 +46,6 @@ EOF;
             ':user_id' => $userID
         ]);
 
-        $result = [];
         if ($query->rowCount() > 0) {
             $row = $query->fetch(PDO::FETCH_ASSOC);
             $result = [
@@ -67,9 +66,11 @@ EOF;
                 'permissions' => $this->getUserBuilderPermission($this->getUserPermissions($userID) ?? []),
             ];
             $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
+
+            return $result;
         }
 
-        return $result;
+        return false;
     }
 
     /**
