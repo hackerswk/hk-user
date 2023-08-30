@@ -10,6 +10,7 @@
 namespace Stanleysie\HkUser;
 
 use \Exception as Exception;
+use \PDO as PDO;
 
 class UserInfo
 {
