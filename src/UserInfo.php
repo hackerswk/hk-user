@@ -59,12 +59,12 @@ EOF;
                 'user_avatar' => $row['avatar'],
                 'user_nickname' => $row['name'],
                 'user_locale' => $row['locale'],
-                'user_account_type' => $this->userAccountType($this->getUserRoles() ?? ''),
-                'user_roles' => $this->getUserRoles() ?? [],
-                'user_permissions' => $this->getUserPermissions() ?? [],
-                'user_services' => $this->userServices($this->getUserServices() ?? ''),
+                'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
+                'user_roles' => $this->getUserRoles($userID) ?? [],
+                'user_permissions' => $this->getUserPermissions($userID) ?? [],
+                'user_services' => $this->userServices($this->getUserServices($userID) ?? ''),
                 'user_limits' => $row['limits'] ?? (object) [],
-                'permissions' => $this->getUserBuilderPermission($this->getUserPermissions() ?? []),
+                'permissions' => $this->getUserBuilderPermission($this->getUserPermissions($userID) ?? []),
             ];
             $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
         }
