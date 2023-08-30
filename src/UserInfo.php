@@ -44,28 +44,29 @@ EOF;
         $query->execute([
             ':user_id' => $userID
         ]);
+
+        $result = [];
         if ($query->rowCount() > 0) {
             $row = $query->fetch(PDO::FETCH_ASSOC);
+            $result = [
+                'id' => $row['id'],
+                'uuid' => $row['uuid'],
+                'user_id' => $row['id'],
+                'user_email' => $row['email'],
+                'user_provider_type' => $this->userProviderType($row['provider_type']),
+                'user_acc' => '',
+                'user_avatar' => $row['avatar'],
+                'user_nickname' => $row['name'],
+                'user_locale' => $row['locale'],
+                'user_account_type' => $this->userAccountType($this->getUserRoles() ?? ''),
+                'user_roles' => $this->getUserRoles() ?? [],
+                'user_permissions' => $this->getUserPermissions() ?? [],
+                'user_services' => $this->userServices($this->getUserServices() ?? ''),
+                'user_limits' => $row['limits'] ?? (object) [],
+                'permissions' => $this->getUserBuilderPermission($this->getUserPermissions() ?? []),
+            ];
+            $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
         }
-
-        $result = [
-            'id' => $row['id'],
-            'uuid' => $row['uuid'],
-            'user_id' => $row['id'],
-            'user_email' => $row['email'],
-            'user_provider_type' => $this->userProviderType($row['provider_type']),
-            'user_acc' => '',
-            'user_avatar' => $row['avatar'],
-            'user_nickname' => $row['name'],
-            'user_locale' => $row['locale'],
-            'user_account_type' => $this->userAccountType($this->getUserRoles() ?? ''),
-            'user_roles' => $this->getUserRoles() ?? [],
-            'user_permissions' => $this->getUserPermissions() ?? [],
-            'user_services' => $this->userServices($this->getUserServices() ?? ''),
-            'user_limits' => $row['limits'] ?? (object) [],
-            'permissions' => $this->getUserBuilderPermission($this->getUserPermissions() ?? []),
-        ];
-        $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
 
         return $result;
     }
@@ -87,7 +88,7 @@ EOF;
             ':user_id' => $userID
         ]);
         if ($query->rowCount() > 0) {
-            $row = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
@@ -108,7 +109,7 @@ EOF;
             ':user_id' => $userID
         ]);
         if ($query->rowCount() > 0) {
-            $row = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
@@ -129,7 +130,7 @@ EOF;
             ':user_id' => $userID
         ]);
         if ($query->rowCount() > 0) {
-            $row = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
