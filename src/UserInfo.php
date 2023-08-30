@@ -389,7 +389,7 @@ EOF;
      */
     public function getUserBuilderPermission($permissions = [])
     {
-        $returnData = new stdClass();
+        $returnData = new \stdClass();
         $returnData->admin = false; // 管理者權限 true (管理者) | false (非管理者)
         $returnData->sitelimit = 12; // 網站數量限制 int | 0 (無上限)
         $returnData->pagelimit = 0; // 頁數限制 (無上限)
