@@ -99,7 +99,6 @@ EOF;
                     if (!in_array($val2["unique_name"], $services[$val2["type"]])) {
                         $services[$val2["type"]][] = $val2["unique_name"];
                     }
-                    array_push($services, $val2["unique_name"]);
                 }
             }
         }
