@@ -126,7 +126,7 @@ EOF;
         $permissions_array = [];
         foreach ($this->getUserServices($userID) as $val) {
             foreach ($this->getServicePermissions($val["service_id"]) as $val2) {
-                array_push($permissions_array, $val2["permission_id"]);
+                array_push($permissions_array, $val2["permissions_id"]);
             }
         }
 
@@ -155,7 +155,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':servcie_id' => $service_id
+            ':service_id' => $service_id
         ]);
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
