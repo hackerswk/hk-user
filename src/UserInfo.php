@@ -89,9 +89,21 @@ EOF;
         $query->execute([
             ':user_id' => $userID
         ]);
+        $services = [];
         if ($query->rowCount() > 0) {
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
+                foreach ($this->getServices($val["service_id"]) as $val2) {
+                    if (!isset($val2["type"])) {
+                        $services[$val2["type"]] = [];
+                    }
+                    if (!in_array($val2["unique_name"], $services[$val2["type"]])) {
+                        $services[$val2["type"]][] = $val2["unique_name"];
+                    }
+                    array_push($services, $val2["unique_name"]);
+                }
+            }
         }
+        return $services;
     }
 
     /**
@@ -204,6 +216,27 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':permission_id' => $permission_id
+        ]);
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    /**
+     * get services
+     * 
+     * @param $service_id
+     * @return array
+     */
+    public function getServices($service_id = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM services
+            WHERE id = :service_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':service_id' => $service_id
         ]);
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
