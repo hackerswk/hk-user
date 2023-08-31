@@ -123,13 +123,60 @@ EOF;
      */
     public function getUserPermissions($userID = null)
     {
+        $permissions_array = [];
+        foreach ($this->getUserServices($userID) as $val) {
+            foreach ($this->getServicePermissions($val["service_id"]) as $val2) {
+                array_push($permissions_array, $val2["permission_id"]);
+            }
+        }
+
+        $user_permissions = [];
+        $_permissions_array = array_unique($permissions_array);
+        foreach ($_permissions_array as $val) {
+            foreach ($this->getPermissions($val) as $val2) {
+                array_push($user_permissions, $val2["unique_name"]);
+            }
+        }
+
+        return $user_permissions;
+    }
+
+    /**
+     * get service permissions
+     * 
+     * @param $service_id
+     * @return array
+     */
+    public function getServicePermissions($service_id = null)
+    {
         $sql = <<<EOF
-            SELECT * FROM user_permissions
-            WHERE user_id = :user_id
+            SELECT * FROM service_permissions
+            WHERE service_id = :service_id
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':servcie_id' => $service_id
+        ]);
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    /**
+     * get permissions
+     * 
+     * @param $permission_id
+     * @return array
+     */
+    public function getPermissions($permission_id = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM permissions
+            WHERE id = :permission_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':permission_id' => $permission_id
         ]);
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
