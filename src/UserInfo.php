@@ -74,6 +74,27 @@ EOF;
     }
 
     /**
+     * get roles
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getServicesFromUser($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_services
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID
+        ]);
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    /**
      * get user service
      * 
      * @param $userID
@@ -157,7 +178,7 @@ EOF;
     public function getUserPermissions($userID = null)
     {
         $permissions_array = [];
-        foreach ($this->getUserServices($userID) as $val) {
+        foreach ($this->getServicesFromUser($userID) as $val) {
             foreach ($this->getServicePermissions($val["service_id"]) as $val2) {
                 array_push($permissions_array, $val2["permissions_id"]);
             }
