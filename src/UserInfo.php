@@ -111,6 +111,33 @@ EOF;
             ':user_id' => $userID
         ]);
         if ($query->rowCount() > 0) {
+            $roles = [];
+            foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
+                foreach ($this->getRole($val["role_id"]) as $val2) {
+                    array_push($roles, $val2["unique_name"]);
+                }
+            }
+            return array_unique($roles);
+        }
+    }
+
+    /**
+     * get roles
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getRole($role_id = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM roles
+            WHERE id = :role_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':role_id' => $role_id
+        ]);
+        if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }
