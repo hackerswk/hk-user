@@ -93,9 +93,7 @@ EOF;
         if ($query->rowCount() > 0) {
             foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
                 foreach ($this->getServices($val["service_id"]) as $val2) {
-                    if (isset($val2["type"])) {
                         $services[$val2["type"]][] = $val2["unique_name"];
-                    }
                 }
             }
         }
