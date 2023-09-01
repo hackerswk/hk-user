@@ -226,6 +226,12 @@ EOF;
             }
         }
 
+        foreach ($this->getRoleFromUser($userID) as $val) {
+            foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
+                array_push($permissions_array, $val2["permissions_id"]);
+            }
+        }
+
         $user_permissions = [];
         $_permissions_array = array_unique($permissions_array);
         foreach ($_permissions_array as $val) {
@@ -234,15 +240,7 @@ EOF;
             }
         }
 
-        foreach ($this->getRoleFromUser($userID) as $val) {
-            foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
-                foreach ($this->getPermissions($val2["permissions_id"]) as $val3) {
-                    array_push($user_permissions, $val3["unique_name"]);
-                }
-            }
-        }
-
-        return array_unique($user_permissions);
+        return $user_permissions;
     }
 
     /**
