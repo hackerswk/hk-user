@@ -149,6 +149,48 @@ EOF;
     }
 
     /**
+     * get user roles
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getRoleFromUser($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_roles
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID
+        ]);
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    /**
+     * get permissions from role
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getPermissionsFromRole($role_id = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM role_permissions
+            WHERE role_id = :role_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':role_id' => $role_id
+        ]);
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    /**
      * get roles
      * 
      * @param $userID
@@ -192,7 +234,15 @@ EOF;
             }
         }
 
-        return $user_permissions;
+        foreach ($this->getRoleFromUser($userID) as $val) {
+            foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
+                foreach ($this->getPermissions($val2["permissions_id"]) as $val3) {
+                    array_push($user_permissions, $val3["unique_name"]);
+                }
+            }
+        }
+
+        return array_unique($user_permissions);
     }
 
     /**
