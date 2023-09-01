@@ -220,23 +220,33 @@ EOF;
     public function getUserPermissions($userID = null)
     {
         $permissions_array = [];
-        foreach ($this->getServicesFromUser($userID) as $val) {
-            foreach ($this->getServicePermissions($val["service_id"]) as $val2) {
-                array_push($permissions_array, $val2["permissions_id"]);
+        if (count($this->getServicesFromUser($userID)) > 0) {
+            foreach ($this->getServicesFromUser($userID) as $val) {
+                if (count($this->getServicePermissions($val["service_id"])) > 0) {
+                    foreach ($this->getServicePermissions($val["service_id"]) as $val2) {
+                        array_push($permissions_array, $val2["permissions_id"]);
+                    }
+                }
             }
         }
 
-        foreach ($this->getRoleFromUser($userID) as $val) {
-            foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
-                array_push($permissions_array, $val2["permissions_id"]);
+        if (count($this->getRoleFromUser($userID)) > 0) {
+            foreach ($this->getRoleFromUser($userID) as $val) {
+                if (count($this->getPermissionsFromRole($val["role_id"])) > 0) {
+                    foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
+                        array_push($permissions_array, $val2["permissions_id"]);
+                    }
+                }
             }
         }
 
         $user_permissions = [];
         $_permissions_array = array_unique($permissions_array);
         foreach ($_permissions_array as $val) {
-            foreach ($this->getPermissions($val) as $val2) {
-                array_push($user_permissions, $val2["unique_name"]);
+            if (count($this->getPermissions($val)) > 0) {
+                foreach ($this->getPermissions($val) as $val2) {
+                    array_push($user_permissions, $val2["unique_name"]);
+                }
             }
         }
 
