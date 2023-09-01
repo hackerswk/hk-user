@@ -89,9 +89,11 @@ EOF;
         $query->execute([
             ':user_id' => $userID
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -137,8 +139,8 @@ EOF;
         $query->execute([
             ':user_id' => $userID
         ]);
+        $roles = [];
         if ($query->rowCount() > 0) {
-            $roles = [];
             foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
                 foreach ($this->getRole($val["role_id"]) as $val2) {
                     array_push($roles, $val2["unique_name"]);
@@ -146,6 +148,7 @@ EOF;
             }
             return array_unique($roles);
         }
+        return $roles;
     }
 
     /**
@@ -164,9 +167,11 @@ EOF;
         $query->execute([
             ':user_id' => $userID
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -185,9 +190,11 @@ EOF;
         $query->execute([
             ':role_id' => $role_id
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -206,9 +213,11 @@ EOF;
         $query->execute([
             ':role_id' => $role_id
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -269,9 +278,11 @@ EOF;
         $query->execute([
             ':service_id' => $service_id
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -290,9 +301,11 @@ EOF;
         $query->execute([
             ':permission_id' => $permission_id
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
@@ -311,9 +324,11 @@ EOF;
         $query->execute([
             ':service_id' => $service_id
         ]);
+        $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        return $result;
     }
 
     /**
