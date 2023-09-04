@@ -62,7 +62,10 @@ EOF;
                 'user_roles' => $this->getUserRoles($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [],
                 'user_services' => $this->userServices($this->getUserServices($userID) ?? ''),
-                'user_limits' => $row['limits'] ?? (object) [],
+                'user_limits' => [
+                    'site' => 12,
+                    'section' => 5,
+                ],
                 'permissions' => $this->getUserBuilderPermission($this->getUserPermissions($userID) ?? []),
             ];
             $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
