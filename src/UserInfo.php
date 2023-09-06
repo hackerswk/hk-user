@@ -66,6 +66,7 @@ EOF;
                     'site' => 12,
                     'section' => 5,
                 ],
+                'user_crm' => $this->getExtraCrmData($userID) ?? [],
                 'permissions' => $this->getUserBuilderPermission($this->getUserPermissions($userID) ?? []),
             ];
             $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
@@ -640,5 +641,28 @@ EOF;
             $returnData->premium = 1;
         }
         return $returnData;
+    }
+
+    /**
+     * get extra data crm
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getExtraCrmData($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT report_status FROM user_extra_crm
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
     }
 }
