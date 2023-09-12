@@ -253,6 +253,14 @@ EOF;
             }
         }
 
+        // freeshop user role
+        if (count($this->getPermissionsFromUser($userID)) > 0) {
+            $result = $this->getPermissionsFromUser($userID);
+            foreach ($result as $val) {
+                array_push($permissions_array, $val["permissions_id"]);
+            }
+        }
+
         $user_permissions = [];
         $_permissions_array = array_unique($permissions_array);
         foreach ($_permissions_array as $val) {
@@ -662,6 +670,29 @@ EOF;
         $result = [];
         if ($query->rowCount() > 0) {
             return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
+     * get permissions from user
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getPermissionsFromUser($user_id = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_permissions
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $user_id
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
         return $result;
     }
