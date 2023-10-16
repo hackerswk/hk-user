@@ -60,6 +60,7 @@ EOF;
                 'user_locale' => $row['locale'],
                 'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
                 'user_roles' => $this->getUserRoles($userID) ?? [],
+                'user_role_quota' => $this->getUserRoleQuota($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [],
                 'user_services' => $this->userServices($this->getUserServices($userID) ?? ''),
                 'user_limits' => [
@@ -695,5 +696,37 @@ EOF;
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
         return $result;
+    }
+
+    /**
+     * get user role quota
+     * 
+     * @param $userID
+     * @return array
+     */
+    public function getUserRoleQuota($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_roles
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID
+        ]);
+        $quota = [];
+        $quotas = [];
+        if ($query->rowCount() > 0) {
+            foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
+                foreach ($this->getRole($val["role_id"]) as $val2) {
+                    $quota['brand_quota'] = $val2['brand_quota'];
+                    $quota['ec_quota'] = $val2['ec_quota'];
+                    $quota['ezec_quato'] = $val2['ezec_quato'];
+                    array_push($quotas, $quota);
+                }
+            }
+            return array_unique($quotas);
+        }
+        return $quotas;
     }
 }
