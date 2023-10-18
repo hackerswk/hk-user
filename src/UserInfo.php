@@ -62,7 +62,7 @@ EOF;
                 'user_roles' => $this->getUserRoles($userID) ?? [],
                 'user_role_quota' => $this->getUserRoleQuota($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [],
-                'user_services' => $this->userServices($this->getUserServices($userID) ?? ''),
+                'user_services' => $this->getUserServices($userID) ?? '',
                 'user_limits' => [
                     'site' => 12,
                     'section' => 5,
@@ -121,7 +121,12 @@ EOF;
         if ($query->rowCount() > 0) {
             foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
                 foreach ($this->getServices($val["service_id"]) as $val2) {
-                        $services[$val2["type"]][] = $val2["unique_name"];
+                    $str = json_decode($val2["text"], true);
+                    $text = $str["zh_TW"]["title"];
+                    $services[] = [
+                        "service_id" => $val["service_id"],
+                        "text" => $text
+                    ];
                 }
             }
         }
