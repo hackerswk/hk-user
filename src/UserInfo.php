@@ -9,7 +9,6 @@
 
 namespace Stanleysie\HkUser;
 
-use \Exception as Exception;
 use \PDO as PDO;
 
 class UserInfo
@@ -31,7 +30,7 @@ class UserInfo
 
     /**
      * get user info
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -43,7 +42,7 @@ class UserInfo
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
 
         if ($query->rowCount() > 0) {
@@ -60,7 +59,7 @@ EOF;
                 'user_locale' => $row['locale'],
                 'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
                 'user_roles' => $this->getUserRoles($userID) ?? [],
-                'user_role_quota' => $this->getUserRoleQuota($userID) ?? [],
+                'user_role_quota' => $this->getUserQuota($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [],
                 'user_services' => $this->getUserServices($userID) ?? '',
                 'user_limits' => [
@@ -80,7 +79,7 @@ EOF;
 
     /**
      * get roles
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -92,7 +91,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -103,7 +102,7 @@ EOF;
 
     /**
      * get user service
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -115,7 +114,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $services = [];
         if ($query->rowCount() > 0) {
@@ -125,7 +124,7 @@ EOF;
                     $text = $str["zh_TW"]["title"];
                     $services[] = [
                         "service_id" => $val["service_id"],
-                        "text" => $text
+                        "text" => $text,
                     ];
                 }
             }
@@ -135,7 +134,7 @@ EOF;
 
     /**
      * get user roles
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -147,7 +146,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $roles = [];
         if ($query->rowCount() > 0) {
@@ -163,7 +162,7 @@ EOF;
 
     /**
      * get user roles
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -175,7 +174,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -186,7 +185,7 @@ EOF;
 
     /**
      * get permissions from role
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -198,7 +197,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':role_id' => $role_id
+            ':role_id' => $role_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -209,7 +208,7 @@ EOF;
 
     /**
      * get roles
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -221,7 +220,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':role_id' => $role_id
+            ':role_id' => $role_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -232,7 +231,7 @@ EOF;
 
     /**
      * get user permissions
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -282,7 +281,7 @@ EOF;
 
     /**
      * get service permissions
-     * 
+     *
      * @param $service_id
      * @return array
      */
@@ -294,7 +293,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':service_id' => $service_id
+            ':service_id' => $service_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -305,7 +304,7 @@ EOF;
 
     /**
      * get permissions
-     * 
+     *
      * @param $permission_id
      * @return array
      */
@@ -317,7 +316,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':permission_id' => $permission_id
+            ':permission_id' => $permission_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -328,7 +327,7 @@ EOF;
 
     /**
      * get services
-     * 
+     *
      * @param $service_id
      * @return array
      */
@@ -340,7 +339,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':service_id' => $service_id
+            ':service_id' => $service_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -351,7 +350,7 @@ EOF;
 
     /**
      * get user account type
-     * 
+     *
      * @param $type
      * @return int
      */
@@ -371,7 +370,7 @@ EOF;
 
     /**
      * get user provider type
-     * 
+     *
      * @param $type
      * @return int
      */
@@ -393,11 +392,12 @@ EOF;
 
     /**
      * get user services
-     * 
+     *
      * @param $data
      * @return array
      */
-    public function userServices($data) {
+    public function userServices($data)
+    {
         $returnData = [];
         if (empty($data)) {
             return [];
@@ -411,181 +411,181 @@ EOF;
                                 case '4cbbb6c9b8c1993f25adc601867b7917':
                                     array_push($returnData, [
                                         'service_id' => 1,
-                                        'text' => '白金月繳'
+                                        'text' => '白金月繳',
                                     ]);
                                     break;
                                 case '5994d46e05899d30fae4d0834d0cefc9':
                                     array_push($returnData, [
                                         'service_id' => 2,
-                                        'text' => '白金年繳'
+                                        'text' => '白金年繳',
                                     ]);
                                     break;
                                 case '793749b3f3dca5aff3a2cc740dd48663':
                                     array_push($returnData, [
                                         'service_id' => 3,
-                                        'text' => '白金三年繳'
+                                        'text' => '白金三年繳',
                                     ]);
                                     break;
                                 case '88efa90d501f45f59309e8132e55c89f':
                                     array_push($returnData, [
                                         'service_id' => 43,
-                                        'text' => '達人組合年繳 - 品牌網站加強版'
+                                        'text' => '達人組合年繳 - 品牌網站加強版',
                                     ]);
                                     break;
                                 case '5be00891e015c85aefb72fc209944036':
                                     array_push($returnData, [
                                         'service_id' => 44,
-                                        'text' => '達人組合年繳  - 購物網站加強版'
+                                        'text' => '達人組合年繳  - 購物網站加強版',
                                     ]);
                                     break;
                                 case '5a35a388e29b22ef88d5502b77583498':
                                     array_push($returnData, [
                                         'service_id' => 45,
-                                        'text' => '達人組合年繳  - 品牌+購物網站加強版'
+                                        'text' => '達人組合年繳  - 品牌+購物網站加強版',
                                     ]);
                                     break;
                                 case 'c04452dda757d474e1071c54926a9a33':
                                     array_push($returnData, [
                                         'service_id' => 51,
-                                        'text' => '達人組合年繳  - Google 搜尋全方位網站加強版'
+                                        'text' => '達人組合年繳  - Google 搜尋全方位網站加強版',
                                     ]);
                                     break;
                                 case 'b6edb58881fe6e46b9c7af64692a5f86':
                                     array_push($returnData, [
                                         'service_id' => 47,
-                                        'text' => '達人組合三年繳 - 品牌網站加強版'
+                                        'text' => '達人組合三年繳 - 品牌網站加強版',
                                     ]);
                                     break;
                                 case 'd6bc9d0a1fab5bf0dd87484616a4bc31':
                                     array_push($returnData, [
                                         'service_id' => 48,
-                                        'text' => '達人組合三年繳  - 購物網站加強版'
+                                        'text' => '達人組合三年繳  - 購物網站加強版',
                                     ]);
                                     break;
                                 case '05fda11050ed8f7db3ddfa234624f33c':
                                     array_push($returnData, [
                                         'service_id' => 49,
-                                        'text' => '達人組合三年繳  - 品牌+購物網站加強版'
+                                        'text' => '達人組合三年繳  - 品牌+購物網站加強版',
                                     ]);
                                     break;
                                 case 'ce7e449d9faa3fc4d6403aa5815dd9a3':
                                     array_push($returnData, [
                                         'service_id' => 52,
-                                        'text' => '達人組合三年繳  - Google 搜尋全方位網站加強版'
+                                        'text' => '達人組合三年繳  - Google 搜尋全方位網站加強版',
                                     ]);
                                     break;
                                 case '8c07f3098f7de905d73c47150aa9efcd':
                                     array_push($returnData, [
                                         'service_id' => 4,
-                                        'text' => '追蹤碼安裝'
+                                        'text' => '追蹤碼安裝',
                                     ]);
                                     break;
                                 case 'fa57f15403eef809b750f44fcf53606e':
                                     array_push($returnData, [
                                         'service_id' => 5,
-                                        'text' => 'Google 分析報表寄送'
+                                        'text' => 'Google 分析報表寄送',
                                     ]);
                                     break;
                                 case 'ef52fa11e0702edfa82efde1656c8a4a':
                                     array_push($returnData, [
                                         'service_id' => 6,
-                                        'text' => '1 對 1 電話諮詢'
+                                        'text' => '1 對 1 電話諮詢',
                                     ]);
                                     break;
                                 case 'a5d0506b19a3a611cd296589caf155aa':
                                     array_push($returnData, [
                                         'service_id' => 7,
-                                        'text' => '網站圖示'
+                                        'text' => '網站圖示',
                                     ]);
                                     break;
                                 case '77c9dc7152cf95d5754c69c5dd114e77':
                                     array_push($returnData, [
                                         'service_id' => 8,
-                                        'text' => '微電商網站代號變更'
+                                        'text' => '微電商網站代號變更',
                                     ]);
                                     break;
                                 case 'afeae76b04f552528ff761d441e202b0':
                                     array_push($returnData, [
                                         'service_id' => 9,
-                                        'text' => '自動轉址設定'
+                                        'text' => '自動轉址設定',
                                     ]);
                                     break;
                                 case '1b8e735c38f4398b83a03cc12c1dcf2f':
                                     array_push($returnData, [
                                         'service_id' => 10,
-                                        'text' => '子網域設定'
+                                        'text' => '子網域設定',
                                     ]);
                                     break;
                                 case 'dccc0ae11a314ad38c3682a5d3868f1f':
                                     array_push($returnData, [
                                         'service_id' => 11,
-                                        'text' => 'Google 搜尋引擎'
+                                        'text' => 'Google 搜尋引擎',
                                     ]);
                                     break;
                                 case '55cb5045c14558090b5a6591553456e8':
                                     array_push($returnData, [
                                         'service_id' => 12,
-                                        'text' => '客服連結按鈕'
+                                        'text' => '客服連結按鈕',
                                     ]);
                                     break;
                                 case '92fc40abc228dc1f1158ef7ea26b66e6':
                                     array_push($returnData, [
                                         'service_id' => 13,
-                                        'text' => '威旭客戶專屬白金'
+                                        'text' => '威旭客戶專屬白金',
                                     ]);
                                     break;
                                 case '3c41b2349628e3451e8a2bbc13418c4f':
                                     array_push($returnData, [
                                         'service_id' => 14,
-                                        'text' => '白金日繳'
+                                        'text' => '白金日繳',
                                     ]);
                                     break;
                                 case '190ff2ccc4304aab384b59cac5f100e9':
                                     array_push($returnData, [
                                         'service_id' => 15,
-                                        'text' => '多語言選單'
+                                        'text' => '多語言選單',
                                     ]);
                                     break;
                                 case 'c4db3b906be96ef11c01a14e229cd484':
                                     array_push($returnData, [
                                         'service_id' => 26,
-                                        'text' => 'Yahoo 關鍵字品牌推廣 - 小資限定'
+                                        'text' => 'Yahoo 關鍵字品牌推廣 - 小資限定',
                                     ]);
                                     break;
                                 case 'fef93fa8deb3ee76b717f7ea20cf5acb':
                                     array_push($returnData, [
                                         'service_id' => 27,
-                                        'text' => 'Yahoo 關鍵字品牌推廣 - 達人限定'
+                                        'text' => 'Yahoo 關鍵字品牌推廣 - 達人限定',
                                     ]);
                                     break;
                                 case '9477bb92b8a79849f0d62ee4b360f9b9':
                                     array_push($returnData, [
                                         'service_id' => 33,
-                                        'text' => 'Facebook 商業擴充功能 (FBE) + 轉換 API'
+                                        'text' => 'Facebook 商業擴充功能 (FBE) + 轉換 API',
                                     ]);
                                     break;
                                 case 'e9ace661b48be40f8f4da680c700ed97':
                                     array_push($returnData, [
                                         'service_id' => 50,
-                                        'text' => 'Google 品牌關鍵字推廣'
+                                        'text' => 'Google 品牌關鍵字推廣',
                                     ]);
                                     break;
                                 case '30e35aa8bf07903ad7628852a1c14db6':
                                     array_push($returnData, [
                                         'service_id' => 53,
-                                        'text' => '客製化網站圖片'
+                                        'text' => '客製化網站圖片',
                                     ]);
                                     break;
                                 case '6ad16dcba3b246c8b12553d6dab6e28c':
                                     array_push($returnData, [
                                         'service_id' => 54,
-                                        'text' => '15 秒圖文剪輯影音'
+                                        'text' => '15 秒圖文剪輯影音',
                                     ]);
                                     break;
                                 case '8886ae1551ddc98ca0a44ccfb8989603':
                                     array_push($returnData, [
                                         'service_id' => 55,
-                                        'text' => 'Facebook 社群小編'
+                                        'text' => 'Facebook 社群小編',
                                     ]);
                                     break;
                             }
@@ -599,7 +599,7 @@ EOF;
 
     /**
      * get user builder permission
-     * 
+     *
      * @param $permissions
      * @return array
      */
@@ -659,7 +659,7 @@ EOF;
 
     /**
      * get extra data crm
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -671,7 +671,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -682,7 +682,7 @@ EOF;
 
     /**
      * get permissions from user
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -694,7 +694,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $user_id
+            ':user_id' => $user_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -705,7 +705,7 @@ EOF;
 
     /**
      * get user role quota
-     * 
+     *
      * @param $userID
      * @return array
      */
@@ -717,7 +717,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $userID
+            ':user_id' => $userID,
         ]);
         $quota = [];
         $quotas = [];
@@ -726,12 +726,77 @@ EOF;
                 foreach ($this->getRole($val["role_id"]) as $val2) {
                     $quota['brand_quota'] = $val2['brand_quota'];
                     $quota['ec_quota'] = $val2['ec_quota'];
-                    $quota['ezec_quato'] = $val2['ezec_quato'];
+                    $quota['ezec_quota'] = $val2['ezec_quota'];
                     array_push($quotas, $quota);
                 }
             }
             return array_unique($quotas);
         }
+        return $quotas;
+    }
+
+    /**
+     * get user permissions quota
+     *
+     * @param $userID
+     * @return array
+     */
+    public function getUserPermissionsQuota($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_permissions
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID,
+        ]);
+        $quota = [];
+        $quotas = [];
+        if ($query->rowCount() > 0) {
+            foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
+                $quota['brand_quota'] = $val['brand_quota'];
+                $quota['ec_quota'] = $val['ec_quota'];
+                $quota['ezec_quota'] = $val['ezec_quota'];
+                array_push($quotas, $quota);
+            }
+            return array_unique($quotas);
+        }
+        return $quotas;
+    }
+
+    /**
+     * get user quota
+     *
+     * @param $userID
+     * @return array
+     */
+    public function getUserQuota($userID = null)
+    {
+        $role_quota = $this->getUserRoleQuota($userID);
+        $permissions_quota = $this->getUserPermissionsQuota($userID);
+        $quota['brand_quota'] = 0;
+        $quota['ec_quota'] = 0;
+        $quota['ezec_quota'] = 0; 
+        $quotas = [];
+        foreach ($role_quota as $val) {
+            foreach ($val as $val2) {
+                $quota['brand_quota'] += $val2['brand_quota'];
+                $quota['ec_quota'] += $val2['ec_quota'];
+                $quota['ezec_quota'] += $val2['ezec_quota']; 
+            }
+        }
+
+        foreach ($permissions_quota as $val) {
+            foreach ($val as $val2) {
+                $quota['brand_quota'] += $val2['brand_quota'];
+                $quota['ec_quota'] += $val2['ec_quota'];
+                $quota['ezec_quota'] += $val2['ezec_quota']; 
+            }
+        }
+
+        array_push($quotas, $quota);
+
         return $quotas;
     }
 }
