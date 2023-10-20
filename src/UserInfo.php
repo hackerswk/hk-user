@@ -780,18 +780,18 @@ EOF;
         $quota['ezec_quota'] = 0; 
         $quotas = [];
         foreach ($role_quota as $val) {
-            foreach ($val as $val2) {
-                $quota['brand_quota'] += $val2['brand_quota'];
-                $quota['ec_quota'] += $val2['ec_quota'];
-                $quota['ezec_quota'] += $val2['ezec_quota']; 
+            foreach ($val as $key => $val2) {
+                $quota[$key] += $val2[$key];
+                //$quota['ec_quota'] += $val2['ec_quota'];
+                //$quota['ezec_quota'] += $val2['ezec_quota']; 
             }
         }
 
         foreach ($permissions_quota as $val) {
-            foreach ($val as $val2) {
-                $quota['brand_quota'] += $val2['brand_quota'];
-                $quota['ec_quota'] += $val2['ec_quota'];
-                $quota['ezec_quota'] += $val2['ezec_quota']; 
+            foreach ($val as $key => $val2) {
+                $quota[$key] += $val2[$key];
+                //$quota['ec_quota'] += $val2['ec_quota'];
+                //$quota['ezec_quota'] += $val2['ezec_quota']; 
             }
         }
 
