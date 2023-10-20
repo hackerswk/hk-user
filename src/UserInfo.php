@@ -781,7 +781,7 @@ EOF;
         $quotas = [];
         foreach ($role_quota as $val) {
             foreach ($val as $key => $val2) {
-                $quota[$key] += $val2[$key];
+                $quota[$key] += $val[$key];
                 //$quota['ec_quota'] += $val2['ec_quota'];
                 //$quota['ezec_quota'] += $val2['ezec_quota']; 
             }
@@ -789,7 +789,7 @@ EOF;
 
         foreach ($permissions_quota as $val) {
             foreach ($val as $key => $val2) {
-                $quota[$key] += $val2[$key];
+                $quota[$key] += $val[$key];
                 //$quota['ec_quota'] += $val2['ec_quota'];
                 //$quota['ezec_quota'] += $val2['ezec_quota']; 
             }
