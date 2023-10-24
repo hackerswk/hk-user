@@ -59,7 +59,7 @@ EOF;
                 'user_locale' => $row['locale'],
                 'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
                 'user_roles' => $this->getUserRoles($userID) ?? [],
-                'user_role_quota' => $this->getUserQuota($userID) ?? [],
+                'user_role_quota' => $this->getUserPermissionsQuota($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [],
                 'user_services' => $this->getUserServices($userID) ?? '',
                 'user_limits' => [
@@ -754,49 +754,23 @@ EOF;
         $quota = [];
         $quotas = [];
         if ($query->rowCount() > 0) {
-            foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $val) {
-                $quota['brand_quota'] = $val['brand_quota'];
-                $quota['ec_quota'] = $val['ec_quota'];
-                $quota['ezec_quota'] = $val['ezec_quota'];
-                array_push($quotas, $quota);
-            }
-            return array_unique($quotas);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            $quota['original_brand_quota'] = $result['original_brand_quota'];
+            $quota['original_ec_quota'] = $result['original_ec_quota'];
+            $quota['original_ezec_quota'] = $result['original_ezec_quota'];
+
+            $quota['available_brand_quota'] = $result['available_brand_quota'];
+            $quota['available_ec_quota'] = $result['available_ec_quota'];
+            $quota['available_ezec_quota'] = $result['available_ezec_quota'];
+
+            $quota['used_brand_quota'] = $result['used_brand_quota'];
+            $quota['used_ec_quota'] = $result['used_ec_quota'];
+            $quota['used_ezec_quota'] = $result['used_ezec_quota'];
+            array_push($quotas, $quota);
+            
+            return $quotas;
         }
         return $quotas;
     }
 
-    /**
-     * get user quota
-     *
-     * @param $userID
-     * @return array
-     */
-    public function getUserQuota($userID = null)
-    {
-        $role_quota = $this->getUserRoleQuota($userID);
-        $permissions_quota = $this->getUserPermissionsQuota($userID);
-        $quota['brand_quota'] = 0;
-        $quota['ec_quota'] = 0;
-        $quota['ezec_quota'] = 0; 
-        $quotas = [];
-        foreach ($role_quota as $val) {
-            foreach ($val as $key => $val2) {
-                $quota[$key] += $val[$key];
-                //$quota['ec_quota'] += $val2['ec_quota'];
-                //$quota['ezec_quota'] += $val2['ezec_quota']; 
-            }
-        }
-
-        foreach ($permissions_quota as $val) {
-            foreach ($val as $key => $val2) {
-                $quota[$key] += $val[$key];
-                //$quota['ec_quota'] += $val2['ec_quota'];
-                //$quota['ezec_quota'] += $val2['ezec_quota']; 
-            }
-        }
-
-        array_push($quotas, $quota);
-
-        return $quotas;
-    }
 }
