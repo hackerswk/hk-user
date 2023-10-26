@@ -745,11 +745,12 @@ EOF;
     {
         $sql = <<<EOF
             SELECT * FROM user_permissions
-            WHERE user_id = :user_id
+            WHERE user_id = :user_id AND permissions_id = :permissions_id
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
+            ':permissions_id' => $this->getPermissionsId("site_quota")
         ]);
         $quota = [];
         $quotas = [];
@@ -771,6 +772,26 @@ EOF;
             return $quotas;
         }
         return $quotas;
+    }
+
+    /**
+     * Get permissions id
+     * 
+     * @return int
+     */
+    public function getPermissionsId($unique_name)
+    {
+        $sql = 'SELECT id FROM permissions ';
+        $sql.= 'WHERE unique_name = :unique_name';
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':unique_name' => $unique_name,
+        ]);
+        $permissions = $query->fetch(PDO::FETCH_ASSOC);
+        if (!empty($permissions['id'])) {
+            return $permissions['id'];
+        }
+        return false;
     }
 
 }
