@@ -110,7 +110,7 @@ EOF;
     {
         $sql = <<<EOF
             SELECT * FROM user_services
-            WHERE user_id = :user_id
+            WHERE user_id = :user_id AND deactivate = 0
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
