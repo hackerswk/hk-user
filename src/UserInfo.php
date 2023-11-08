@@ -67,6 +67,7 @@ EOF;
                     'section' => 5,
                 ],
                 'user_crm' => $this->getExtraCrmData($userID) ?? [],
+                'user_sites' => $this->getUserSites($userID) ?? [],
                 'permissions' => $this->getUserBuilderPermission($this->getUserPermissions($userID) ?? []),
             ];
             $result['user_acc'] = $result['user_email'] . '#' . $result['user_provider_type'];
@@ -794,4 +795,26 @@ EOF;
         return false;
     }
 
+    /**
+     * get sites of user
+     *
+     * @param $userID
+     * @return array
+     */
+    public function getUserSites($userID = null)
+    {
+        $sql = <<<EOF
+            SELECT site_id FROM user_sites
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID,
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
 }
