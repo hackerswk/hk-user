@@ -46,7 +46,7 @@ class UserEdit
                 ':user_id' => $user_id,
                 ':role_id' => $role_id
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
@@ -70,7 +70,7 @@ class UserEdit
             $query->execute([
                 ':user_id' => $user_id
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
@@ -164,7 +164,7 @@ EOF;
                 ':used_ec_quota' => isset($quota['used_ec_quota']) ? $quota['used_ec_quota'] : 0,
                 ':used_ezec_quota' => isset($quota['used_ezec_quota']) ? $quota['used_ezec_quota'] : 0
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
@@ -189,7 +189,7 @@ EOF;
                 ':user_id' => $user_id,
                 ':permissions_id' => 28
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
@@ -204,17 +204,19 @@ EOF;
      * @param $user_id, $service_id
      * @return bool
      */
-    public function setServices($user_id, $service_id)
+    public function setServices($user_id, $service_id, $activated_at, $expire_at)
     {
         try {
             $sql = 'INSERT INTO user_services
-                    SET user_id = :user_id, service_id = :service_id';
+                    SET user_id = :user_id, service_id = :service_id, activated_at = :activated_at, expire_at = :expire_at';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':user_id' => $user_id,
-                ':service_id' => $service_id
+                ':service_id' => $service_id,
+                ':activated_at' => $activated_at,
+                ':expire_at' => $expire_at
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
@@ -240,7 +242,7 @@ EOF;
                 ':service_id' => $service_id,
                 ':deactivate' => $deactivate
             ]);
-            if ($query->rowCount() == 0) {
+            if ($query->rowCount() > 0) {
                 return true;
             }
         } catch (Exception $e) {
