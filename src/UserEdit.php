@@ -112,7 +112,7 @@ EOF;
     {
         $sql = <<<EOF
             SELECT * FROM user_roles
-            WHERE id = :user_id
+            WHERE user_id = :user_id
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
