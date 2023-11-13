@@ -141,15 +141,15 @@ EOF;
                     SET 
                     user_id = :user_id, 
                     permissions_id = :permissions_id,
-                    original_brand_quota => :original_brand_quota,
-                    original_ec_quota => :original_ec_quota,
-                    original_ezec_quota => :original_ezec_quota,
-                    available_brand_quota => :available_brand_quota,
-                    available_ec_quota => :available_ec_quota,
-                    available_ezec_quota => :available_ezec_quota,
-                    used_brand_quota => :used_brand_quota,
-                    used_ec_quota => :used_ec_quota,
-                    used_ezec_quota => :used_ezec_quota';
+                    original_brand_quota = :original_brand_quota,
+                    original_ec_quota = :original_ec_quota,
+                    original_ezec_quota = :original_ezec_quota,
+                    available_brand_quota = :available_brand_quota,
+                    available_ec_quota = :available_ec_quota,
+                    available_ezec_quota = :available_ezec_quota,
+                    used_brand_quota = :used_brand_quota,
+                    used_ec_quota = :used_ec_quota,
+                    used_ezec_quota = :used_ezec_quota';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':user_id' => $user_id,
