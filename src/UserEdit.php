@@ -183,10 +183,11 @@ EOF;
     {
         try {
             $sql = 'DELETE FROM user_permissions
-                    WHERE user_id = :user_id';
+                    WHERE user_id = :user_id AND permissions_id = :permissions_id';
             $query = $this->database->prepare($sql);
             $query->execute([
-                ':user_id' => $user_id
+                ':user_id' => $user_id,
+                ':permissions_id' => 28
             ]);
             if ($query->rowCount() == 0) {
                 return true;
