@@ -204,7 +204,7 @@ EOF;
      * @param $user_id, $service_id
      * @return bool
      */
-    public function setServices($user_id, $service_id, $activated_at, $expire_at)
+    public function setServices($user_id, $service_id, $activated_at = null, $expire_at = null)
     {
         try {
             $sql = 'INSERT INTO user_services
