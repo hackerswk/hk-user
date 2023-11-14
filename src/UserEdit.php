@@ -231,18 +231,16 @@ EOF;
      * @param $user_id, $service_id, $deactivate, $activated_at, $expire_at
      * @return bool
      */
-    public function updateServices($user_id, $service_id, $deactivate = 1, $activated_at = null, $expire_at = null)
+    public function updateServices($user_id, $service_id, $deactivate = 1)
     {
         try {
             $sql = 'UPDATE user_services
-                    SET deactivate = :deactivate WHERE user_id = :user_id AND service_id = :service_id AND activated_at = :activated_at AND expire_at = :expire_at';
+                    SET deactivate = :deactivate WHERE user_id = :user_id AND service_id = :service_id';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':user_id' => $user_id,
                 ':service_id' => $service_id,
-                ':deactivate' => $deactivate,
-                ':activated_at' => $activated_at,
-                ':expire_at' => $expire_at
+                ':deactivate' => $deactivate
             ]);
             if ($query->rowCount() > 0) {
                 return true;
