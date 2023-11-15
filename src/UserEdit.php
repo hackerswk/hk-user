@@ -231,15 +231,14 @@ EOF;
      * @param $user_id, $service_id, $deactivate, $activated_at, $expire_at
      * @return bool
      */
-    public function updateServices($user_id, $service_id, $deactivate = 1)
+    public function updateServices($id, $deactivate = 1)
     {
         try {
             $sql = 'UPDATE user_services
-                    SET deactivate = :deactivate WHERE user_id = :user_id AND service_id = :service_id';
+                    SET deactivate = :deactivate WHERE id = :id';
             $query = $this->database->prepare($sql);
             $query->execute([
-                ':user_id' => $user_id,
-                ':service_id' => $service_id,
+                ':id' => $id,
                 ':deactivate' => $deactivate
             ]);
             if ($query->rowCount() > 0) {
@@ -257,7 +256,7 @@ EOF;
      * @param $user_id
      * @return bool
      */
-    public function setUserForFreeshop($user_id)
+    public function setUserForFreeshop($user_id, $quota)
     {
         try {
             $activated_at = date("Y-m-d H:i:s", time());
@@ -266,19 +265,8 @@ EOF;
             if (!$this->setServices($user_id, 63, $activated_at, $expire_at)) {
                 $this->database->rollBack();
                 return false;
-
-                $quota = [
-                    'original_brand_quota' => 0,
-                    'original_ec_quota' => 0,
-                    'original_ezec_quota' => 0,
-                    'available_brand_quota' => 0,
-                    'available_ec_quota' => 1,
-                    'available_ezec_quota' => 0,
-                    'used_brand_quota' => 0,
-                    'used_ec_quota' => 0,
-                    'used_ezec_quota' => 0
-                ];
-                if (!$this->setQuota($user_id, 10, $quota)) {
+                
+                if (!$this->setQuota($user_id, 28, $quota)) {
                     $this->database->rollBack();
                     return false;
                 }
@@ -288,5 +276,53 @@ EOF;
             throw new Exception($e->getMessage());
         }
         return true;
-    } 
+    }
+    
+    /**
+     * delete user sites from user id.
+     * 
+     * @param $user_id
+     * @return bool
+     */
+    public function delUserSiteFromUserId($user_id)
+    {
+        try {
+            $sql = 'DELETE FROM user_sites
+                    WHERE user_id = :user_id';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':user_id' => $user_id
+            ]);
+            if ($query->rowCount() > 0) {
+                return true;
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * delete user sites from site id.
+     * 
+     * @param $site_id
+     * @return bool
+     */
+    public function delUserSiteFromSiteId($site_id)
+    {
+        try {
+            $sql = 'DELETE FROM user_sites
+                    WHERE site_id = :site_id';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':site_id' => $site_id
+            ]);
+            if ($query->rowCount() > 0) {
+                return true;
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return false;
+    }
 }
