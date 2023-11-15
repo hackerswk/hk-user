@@ -249,5 +249,44 @@ EOF;
             throw new Exception($e->getMessage());
         }
         return false;
+    }
+    
+    /**
+     * set user for freeshop.
+     * 
+     * @param $user_id
+     * @return bool
+     */
+    public function setUserForFreeshop($user_id)
+    {
+        try {
+            $activated_at = date("Y-m-d H:i:s", time());
+            $expire_at = date("Y-m-d H:i:s", strtotime($activated_at) + 30 * 86400);
+            $this->database->beginTransaction();
+            if (!$this->setServices($user_id, 63, $activated_at, $expire_at)) {
+                $this->database->rollBack();
+                return false;
+
+                $quota = [
+                    'original_brand_quota' => 0,
+                    'original_ec_quota' => 0,
+                    'original_ezec_quota' => 0,
+                    'available_brand_quota' => 0,
+                    'available_ec_quota' => 1,
+                    'available_ezec_quota' => 0,
+                    'used_brand_quota' => 0,
+                    'used_ec_quota' => 0,
+                    'used_ezec_quota' => 0
+                ];
+                if (!$this->setQuota($user_id, 10, $quota)) {
+                    $this->database->rollBack();
+                    return false;
+                }
+            }
+            $this->database->commit();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return true;
     } 
 }
