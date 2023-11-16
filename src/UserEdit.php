@@ -265,11 +265,10 @@ EOF;
             if (!$this->setServices($user_id, 63, $activated_at, $expire_at)) {
                 $this->database->rollBack();
                 return false;
-                
-                if (!$this->setQuota($user_id, 28, $quota)) {
-                    $this->database->rollBack();
-                    return false;
-                }
+            }
+            if (!$this->setQuota($user_id, 28, $quota)) {
+                $this->database->rollBack();
+                return false;
             }
             $this->database->commit();
         } catch (Exception $e) {
