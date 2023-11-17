@@ -84,15 +84,16 @@ EOF;
      * @param $userID
      * @return array
      */
-    public function getServicesFromUser($userID = null)
+    public function getServicesFromUser($userID = null, $deactivate = 0)
     {
         $sql = <<<EOF
             SELECT * FROM user_services
-            WHERE user_id = :user_id AND deactivate = 0
+            WHERE user_id = :user_id AND deactivate = :deactivate
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
+            ':deactivate' => $deactivate
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
