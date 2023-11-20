@@ -228,18 +228,18 @@ EOF;
     /**
      * update user services.
      * 
-     * @param $user_id, $service_id, $deactivate, $activated_at, $expire_at
+     * @param $id, $expire_at
      * @return bool
      */
-    public function updateServices($id, $deactivate = 1)
+    public function updateServices($id, $expire_at)
     {
         try {
             $sql = 'UPDATE user_services
-                    SET deactivate = :deactivate WHERE id = :id';
+                    SET expire_at = :expire_at WHERE id = :id';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':id' => $id,
-                ':deactivate' => $deactivate
+                ':expire_at' => $expire_at
             ]);
             if ($query->rowCount() > 0) {
                 return true;
@@ -315,6 +315,32 @@ EOF;
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':site_id' => $site_id
+            ]);
+            if ($query->rowCount() > 0) {
+                return true;
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * set services expired.
+     * 
+     * @param $user_id, $service_id, $has_exceed
+     * @return bool
+     */
+    public function setServiceExpired($user_id, $service_id, $has_exceed = 1)
+    {
+        try {
+            $sql = 'UPDATE user_services
+                    SET has_exceed = :has_exceed WHERE user_id = :user_id AND service_id = :service_id';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':user_id' => $user_id,
+                ':service_id' => $service_id,
+                ':has_exceed' => $has_exceed
             ]);
             if ($query->rowCount() > 0) {
                 return true;
