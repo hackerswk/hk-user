@@ -820,6 +820,30 @@ EOF;
     }
     
     /**
+     * get services fron service id
+     *
+     * @param $service_id, $deactivate
+     * @return array
+     */
+    public function getServicesFromService($service_id, $deactivate = 0)
+    {
+        $sql = <<<EOF
+            SELECT * FROM user_services
+            WHERE service_id = :service_id AND deactivate = :deactivate
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':service_id' => $service_id,
+            ':deactivate' => $deactivate
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
      * get site permission of user
      *
      * @param $userID, $site_id
