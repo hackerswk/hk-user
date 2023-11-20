@@ -231,15 +231,16 @@ EOF;
      * @param $id, $expire_at
      * @return bool
      */
-    public function updateServices($id, $expire_at)
+    public function updateServices($id, $expire_at, $deactivate = 1)
     {
         try {
             $sql = 'UPDATE user_services
-                    SET expire_at = :expire_at WHERE id = :id';
+                    SET expire_at = :expire_at, deactivate = :deactivate WHERE id = :id';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':id' => $id,
-                ':expire_at' => $expire_at
+                ':expire_at' => $expire_at,
+                ':deactivate' => $deactivate
             ]);
             if ($query->rowCount() > 0) {
                 return true;
