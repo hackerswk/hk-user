@@ -125,8 +125,12 @@ EOF;
                     $str = json_decode($val2["text"], true);
                     $text = $str["zh_TW"]["title"];
                     $services[] = [
+                        "id" => $val["id"],
                         "service_id" => $val["service_id"],
                         "text" => $text,
+                        "deactivate" => $val["deactivate"],
+                        "activated_at" => $val["activated_at"],
+                        "expire_at" => $val["expire_at"]
                     ];
                 }
             }
