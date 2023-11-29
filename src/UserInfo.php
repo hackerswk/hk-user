@@ -853,7 +853,6 @@ EOF;
      * @param $userID, $site_id
      * @return array
      */
-    /*
     public function getUserSitePermission($userID, $site_id)
     {
         $sql = <<<EOF
@@ -871,14 +870,13 @@ EOF;
         }
         return $result;
     }
-    */
+    
     /**
      * get site owner
      *
      * @param $site_id, $helper_id
      * @return array
      */
-    /*
     public function getSiteOwner($site_id, $helper_id = 1)
     {
         $sql = <<<EOF
@@ -896,31 +894,81 @@ EOF;
         }
         return $result;
     }
-    */
+    
     /**
-     * get site permission of user
+     * get site permissions of user
      *
      * @param $userID
      * @return array
      */
-    /*
-    public function getPermissionsForUser($userID)
+    public function getSitePermissionsForUser($userID)
     {
         $sites = $this->getUserSites($userID);
         $site_permissions = [];
         foreach ($sites as $site_id) {
-            $owner_id = $this->getSiteOwner($site_id);
-            $permissions = $this->getUserPermissions($owner_id);
-            $permission_id_arry = [];
-            foreach ($permissions as $val) {
-                array_push($permission_id_arry, $this->getPermissionsId($val));
-            } 
-
-            $helper_permission_id_arry = $this->getUserSitePermission($userID, $site_id);
-            $site_permissions[$site_id] = array_intersect($permission_id_arry, $helper_permission_id_arry);
+            $siteOwner = $this->getSiteOwner($site_id);
+            $owner_id = $siteOwner["user_id"];
+            $owner_permissions = $this->getUserPermissions($owner_id);
+            $result = $this->getHelperOfUser($userID, $site_id);
+            $helper_permissions_array = $this->getPermissionsOfHelper($result["helper_id"]);
+            $site_permissions[$site_id] = array_intersect($owner_permissions, $helper_permissions_array);
         }
         
         return $site_permissions;
     }
-    */
+
+    /**
+     * get helper of user
+     *
+     * @param $userID, $site_id
+     * @return array
+     */
+    public function getHelperOfUser($userID, $site_id)
+    {
+        $sql = <<<EOF
+            SELECT helper_id FROM user_sites
+            WHERE user_id = :user_id AND site_id = :site_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID,
+            ':site_id' => $site_id
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
+     * get permissions of helper
+     *
+     * @param $helper_id
+     * @return array
+     */
+    public function getPermissionsOfHelper($helper_id)
+    {
+        $sql = <<<EOF
+            SELECT permissions_id FROM helper_permissions
+            WHERE helper_id = :helper_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':helper_id' => $helper_id
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            $permission_id_arry = $query->fetchAll(PDO::FETCH_ASSOC);
+            $helper_permissions_array = [];
+            foreach ($permission_id_arry as $val) {
+                foreach ($this->getPermissions($val["permissions_id"]) as $val2) {
+                    array_push($helper_permissions_array, $val2["unique_name"]);
+                }
+            } 
+            return $helper_permissions_array;
+        }
+        return $result;
+    }
+    
 }
