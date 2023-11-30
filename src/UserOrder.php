@@ -152,9 +152,11 @@ EOF;
     public function getOrderFromUUID($user_id, $uuid)
     {
         $sql = <<<EOF
-            SELECT * 
-            FROM user_orders
-            WHERE user_id = :user_id AND uuid = :uuid
+            SELECT o.id, o.user_id, o.created_at, o.status
+            FROM user_orders o
+            INNER JOIN user_order_items oi ON oi.order_id = o.id
+            WHERE oi.service_unique_name = :uuid
+            AND o.user_id = :user_id
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
@@ -238,11 +240,11 @@ EOF;
     public function getLastPaidRecord($order_id)
     {
         $sql = <<<EOF
-            SELECT * 
-            FROM user_order_periods
-            WHERE order_id = :order_id
-            ORDER BY id DESC
-            LIMIT 0, 1
+            SELECT order_id, created_at AS last_paid_at FROM user_order_periods
+            WHERE order_id = :order_id 
+            AND refunded = 0
+            AND deleted_at IS NULL
+            ORDER BY id DESC LIMIT 0, 1
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
