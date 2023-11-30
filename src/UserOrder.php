@@ -228,4 +228,30 @@ EOF;
         }
         return false;
     }
+
+    /**
+     * get last paid record
+     *
+     * @param $order_id
+     * @return array
+     */
+    public function getLastPaidRecord($order_id)
+    {
+        $sql = <<<EOF
+            SELECT * 
+            FROM user_order_periods
+            WHERE order_id = :order_id
+            ORDER BY id DESC
+            LIMIT 0, 1
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':order_id' => $order_id
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
 }
