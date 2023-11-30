@@ -971,4 +971,48 @@ EOF;
         return $result;
     }
     
+    /**
+     * get users
+     *
+     * @return array
+     */
+    public function getUsers()
+    {
+        $sql = <<<EOF
+            SELECT * FROM users WHERE id > :id AND deleted_at IS NULL
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':id' => 0
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
+     * get services from type
+     *
+     * @param $type
+     * @return array
+     */
+    public function getServicesFromType($type)
+    {
+        $sql = <<<EOF
+            SELECT * 
+            FROM services
+            WHERE type = :type
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':type' => $type
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
 }

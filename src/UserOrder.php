@@ -142,4 +142,90 @@ EOF;
         }
         return $result;
     }
+
+    /**
+     * get order from uuid
+     *
+     * @param $order_id, $uuid
+     * @return array
+     */
+    public function getOrderFromUUID($user_id, $uuid)
+    {
+        $sql = <<<EOF
+            SELECT * 
+            FROM user_orders
+            WHERE user_id = :user_id AND uuid = :uuid
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $user_id,
+            ':uuid' => $uuid
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
+     * set user order status
+     *
+     * @param $order_id, $status
+     * @return array
+     */
+    public function setUserOrderStatus($order_id, $status)
+    {
+        $sql = <<<EOF
+            UPDATE user_orders
+            SET status = :status
+            WHERE id = :order_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':order_id' => $order_id
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    /**
+     * set user order feedback.
+     * 
+     * @param $order_id, $user_id, $ec, $brand_site, $stop_using_reason, $why_stop, $suggestion
+     * @return bool
+     */
+    public function setUserOrderFeedback($order_id, $user_id, $ec, $brand_site, $stop_using_reason, $why_stop = null, $suggestion = null)
+    {
+        try {
+            $sql = 'INSERT INTO user_order_feedback
+                    SET
+                    order_id = :order_id, 
+                    user_id = :user_id, 
+                    ec = :ec,
+                    brand_site = :brand_site,
+                    stop_using_reason = :stop_using_reason,
+                    why_stop = :why_stop,
+                    suggestion = :suggestion';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':order_id' => $order_id,
+                ':user_id' => $user_id,
+                ':ec' => $ec,
+                ':brand_site' => $brand_site,
+                ':stop_using_reason' => $stop_using_reason,
+                ':why_stop' => $why_stop,
+                ':suggestion' => $suggestion
+            ]);
+            if ($query->rowCount() > 0) {
+                return true;
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return false;
+    }
 }
