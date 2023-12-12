@@ -174,7 +174,7 @@ EOF;
      * set user order status
      *
      * @param $order_id, $status
-     * @return array
+     * @return bool
      */
     public function setUserOrderStatus($order_id, $status)
     {
@@ -187,11 +187,11 @@ EOF;
         $query->execute([
             ':order_id' => $order_id
         ]);
-        $result = [];
+        //$result = [];
         if ($query->rowCount() > 0) {
-            return $query->fetch(PDO::FETCH_ASSOC);
+            return true;
         }
-        return $result;
+        return false;
     }
 
     /**
