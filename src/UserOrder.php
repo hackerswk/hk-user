@@ -185,7 +185,8 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':order_id' => $order_id
+            ':order_id' => $order_id,
+            ':status' => $status
         ]);
         //$result = [];
         if ($query->rowCount() > 0) {
