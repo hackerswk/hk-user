@@ -73,7 +73,7 @@ EOF;
     {
         $sql = <<<EOF
             SELECT id, order_id,
-            IF(deleted_at IS NULL, 1, 0) status
+            IF(deleted_at IS NULL, 1, 0) status,
             UNIX_TIMESTAMP(created_at) created_at
             FROM user_order_periods
             WHERE order_id = :order_id
