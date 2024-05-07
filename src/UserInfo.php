@@ -60,8 +60,8 @@ EOF;
                 'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
                 'user_roles' => $this->getUserRoles($userID) ?? [],
                 'user_role_quota' => $this->getUserPermissionsQuota($userID) ?? [],
-                'user_permissions' => $this->getUserAndHelperPermissions($userID) ?? [], // Permissions for normal, black card, and helper service users
-                'site_permissions' => $this->getSitePermissions($userID) ?? [],        // Permissions for pro service users
+                'user_permissions' => $this->getUserPermissions($userID) ?? [], // Permissions for normal, black card, and helper service users
+                'site_permissions' => $this->getSitePermissions($userID) ?? [], // Permissions for pro service users
                 'user_services' => $this->getUserServices($userID) ?? '',
                 'user_crm' => $this->getExtraCrmData($userID) ?? [],
                 'user_sites' => $this->getUserSites($userID) ?? [],
@@ -90,7 +90,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
-            ':deactivate' => $deactivate
+            ':deactivate' => $deactivate,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -127,7 +127,7 @@ EOF;
                         "text" => $text,
                         "deactivate" => $val["deactivate"],
                         "activated_at" => $val["activated_at"],
-                        "expire_at" => $val["expire_at"]
+                        "expire_at" => $val["expire_at"],
                     ];
                 }
             }
@@ -251,61 +251,38 @@ EOF;
             }
         }
 
-        // Role permissions are no longer used
-        /* 
-        if (count($this->getRoleFromUser($userID)) > 0) {
-            foreach ($this->getRoleFromUser($userID) as $val) {
-                if (count($this->getPermissionsFromRole($val["role_id"])) > 0) {
-                    foreach ($this->getPermissionsFromRole($val["role_id"]) as $val2) {
-                        array_push($permissions_array, $val2["permissions_id"]);
-                    }
+        if (empty($this->getHelperOfCrm($userID))) {
+            $helper_rs = $this->getHelperOfCrm($userID);
+            if (count($this->getPermissionsOfHelper($helper_rs["helper_id"])) > 0) {
+                foreach ($this->getPermissionsOfHelper($helper_rs["helper_id"]) as $val2) {
+                    array_push($permissions_array, $val2["permissions_id"]);
                 }
             }
         }
-        
 
-        // freeshop user role
-        if (count($this->getPermissionsFromUser($userID)) > 0) {
-            $result = $this->getPermissionsFromUser($userID);
-            foreach ($result as $val) {
-                array_push($permissions_array, $val["permissions_id"]);
-            }
-        }
-        
-        //$user_permissions = [];
-        $_permissions_array = array_unique($permissions_array);
-        foreach ($_permissions_array as $val) {
-            if (count($this->getPermissions($val)) > 0) {
-                foreach ($this->getPermissions($val) as $val2) {
-                    array_push($user_permissions, $val2["unique_name"]);
-                }
-            }
-        }
-        */
-        return $permissions_array;
+        return array_unique($permissions_array);
     }
 
     /**
-     * get service permissions
+     * Get service permissions
      *
-     * @param $service_id
-     * @return array
+     * @param int|null $service_id Service ID, default is null to get permissions for all services
+     * @return array Returns an array of permission information
      */
     public function getServicePermissions($service_id = null)
     {
         $sql = <<<EOF
-            SELECT * FROM service_permissions
-            WHERE service_id = :service_id
+        SELECT sp.*, p.*
+        FROM service_permissions sp
+        JOIN permissions p ON sp.permission_id = p.id
+        WHERE sp.service_id = :service_id
+        AND p.is_enabled = 1
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':service_id' => $service_id,
         ]);
-        $result = [];
-        if ($query->rowCount() > 0) {
-            return $query->fetchAll(PDO::FETCH_ASSOC);
-        }
-        return $result;
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -756,7 +733,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
-            ':permissions_id' => $this->getPermissionsId("site_quota")
+            ':permissions_id' => $this->getPermissionsId("site_quota"),
         ]);
         $quota = [];
         $quotas = [];
@@ -774,7 +751,7 @@ EOF;
             $quota['used_ec_quota'] = $result['used_ec_quota'];
             $quota['used_ezec_quota'] = $result['used_ezec_quota'];
             array_push($quotas, $quota);
-            
+
             return $quotas;
         }
         return $quotas;
@@ -782,13 +759,13 @@ EOF;
 
     /**
      * Get permissions id
-     * 
+     *
      * @return int
      */
     public function getPermissionsId($unique_name)
     {
         $sql = 'SELECT id FROM permissions ';
-        $sql.= 'WHERE unique_name = :unique_name';
+        $sql .= 'WHERE unique_name = :unique_name';
         $query = $this->database->prepare($sql);
         $query->execute([
             ':unique_name' => $unique_name,
@@ -809,7 +786,7 @@ EOF;
     public function getUserSites($userID = null)
     {
         $sql = <<<EOF
-            SELECT site_id FROM user_sites
+            SELECT * FROM user_sites
             WHERE user_id = :user_id
 EOF;
         $query = $this->database->prepare($sql);
@@ -822,7 +799,7 @@ EOF;
         }
         return $result;
     }
-    
+
     /**
      * get services fron service id
      *
@@ -838,7 +815,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':service_id' => $service_id,
-            ':deactivate' => $deactivate
+            ':deactivate' => $deactivate,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -862,7 +839,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
-            ':site_id' => $site_id
+            ':site_id' => $site_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -870,7 +847,7 @@ EOF;
         }
         return $result;
     }
-    
+
     /**
      * get site owner
      *
@@ -886,7 +863,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':site_id' => $site_id,
-            ':helper_id' => $helper_id
+            ':helper_id' => $helper_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -894,27 +871,64 @@ EOF;
         }
         return $result;
     }
-    
+
     /**
      * get site permissions of user
      *
      * @param $userID
      * @return array
      */
-    public function getUserAndHelperPermissions($userID)
+    public function getSitePermissions($userID)
     {
         $sites = $this->getUserSites($userID);
-        $site_permissions = [];
-        foreach ($sites as $site_id) {
-            $siteOwner = $this->getSiteOwner($site_id);
-            $owner_id = $siteOwner["user_id"];
-            $owner_permissions = $this->getUserPermissions($owner_id);
-            $result = $this->getHelperOfUser($userID, $site_id);
-            $helper_permissions_array = $this->getPermissionsOfHelper($result["helper_id"]);
-            $site_permissions[$site_id] = array_intersect($owner_permissions, $helper_permissions_array);
+        $all_site_permissions = [];
+        foreach ($sites as $site) {
+            $site_permissions = [];
+            $helper_permissions = $this->getPermissionsOfHelper($site["helper_id"]);
+            array_merge($site_permissions, $helper_permissions);
+            $site_pro_services = $this->getServiceIdsBySiteId($site['site_id']);
+            foreach ($site_pro_services as $val) {
+                $pro_service_permissions = $this->getProServicePermission($val['service_id']);
+                array_merge($site_permissions, $pro_service_permissions);
+            }
+            $all_site_permissions[$site['site_id']] = array_unique($site_permissions);
         }
-        
-        return $site_permissions;
+
+        return $all_site_permissions;
+    }
+
+    /**
+     * Retrieve service IDs associated with a site ID from the site_pro_services table.
+     *
+     * @param int $site_id The ID of the site.
+     * @return array Returns an array of service IDs associated with the site.
+     */
+    public function getServiceIdsBySiteId($site_id)
+    {
+        // SQL query to retrieve service IDs based on site ID
+        $sql = <<<EOF
+        SELECT service_id FROM site_pro_services
+        WHERE site_id = :site_id
+EOF;
+
+        // Prepare and execute the query
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':site_id' => $site_id,
+        ]);
+
+        // Initialize result array
+        $result = [];
+
+        // Check if any records were found
+        if ($query->rowCount() > 0) {
+            // Fetch all rows and store the service IDs in the result array
+            $service_ids = $query->fetchAll(PDO::FETCH_COLUMN);
+            return $service_ids;
+        }
+
+        // If no records were found, return an empty array
+        return $result;
     }
 
     /**
@@ -932,7 +946,7 @@ EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
             ':user_id' => $userID,
-            ':site_id' => $site_id
+            ':site_id' => $site_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -942,37 +956,32 @@ EOF;
     }
 
     /**
-     * get permissions of helper
+     * Retrieve permissions associated with a helper.
      *
-     * @param $helper_id
-     * @return array
+     * @param int $helper_id The ID of the helper.
+     * @return array Returns an array of permission IDs associated with the helper.
      */
     public function getPermissionsOfHelper($helper_id)
     {
         $sql = <<<EOF
-            SELECT permissions_id FROM helper_permissions
-            WHERE helper_id = :helper_id
+        SELECT hp.permissions_id
+        FROM helper_permissions hp
+        JOIN permissions p ON hp.permissions_id = p.id
+        WHERE hp.helper_id = :helper_id
+        AND p.is_enabled = 1
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':helper_id' => $helper_id
+            ':helper_id' => $helper_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
-            $permission_id_arry = $query->fetchAll(PDO::FETCH_ASSOC);
-            /*
-            $helper_permissions_array = [];
-            foreach ($permission_id_arry as $val) {
-                foreach ($this->getPermissions($val["permissions_id"]) as $val2) {
-                    array_push($helper_permissions_array, $val2["unique_name"]);
-                }
-            } 
-            */
-            return $permission_id_arry;
+            $permission_id_array = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $permission_id_array;
         }
         return $result;
     }
-    
+
     /**
      * get users
      *
@@ -985,7 +994,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':id' => 0
+            ':id' => 0,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -1003,13 +1012,13 @@ EOF;
     public function getServicesFromType($type)
     {
         $sql = <<<EOF
-            SELECT * 
+            SELECT *
             FROM services
             WHERE type = :type
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':type' => $type
+            ':type' => $type,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -1032,7 +1041,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':site_id' => $site_id
+            ':site_id' => $site_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -1042,25 +1051,32 @@ EOF;
     }
 
     /**
-     * get permissions of pro service
+     * Retrieve permissions associated with a pro service.
      *
-     * @param $service_id
-     * @return array
+     * @param int $service_id The ID of the pro service.
+     * @return array Returns an array of permission IDs associated with the pro service.
      */
     public function getProServicePermission($service_id)
     {
         $sql = <<<EOF
-            SELECT permission_id FROM pro_service_permissions
-            WHERE service_id = :service_id
+        SELECT p.permission_id
+        FROM pro_service_permissions psp
+        JOIN permissions p ON psp.permission_id = p.id
+        WHERE psp.service_id = :service_id
+        AND p.is_enabled = 1
 EOF;
+
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':service_id' => $service_id
+            ':service_id' => $service_id,
         ]);
+
         $result = [];
+
         if ($query->rowCount() > 0) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+
         return $result;
     }
 
@@ -1078,7 +1094,7 @@ EOF;
 EOF;
         $query = $this->database->prepare($sql);
         $query->execute([
-            ':user_id' => $user_id
+            ':user_id' => $user_id,
         ]);
         $result = [];
         if ($query->rowCount() > 0) {
@@ -1093,7 +1109,7 @@ EOF;
      * @param $user_id
      * @return array
      */
-    public function getSitePermissions($user_id = null)
+    public function getSiteProPermissions($user_id = null)
     {
         if (count($this->getSiteProServices($user_id) > 0)) {
             $siteProService = $this->getSiteProServices($user_id);
@@ -1101,9 +1117,32 @@ EOF;
             foreach ($siteProService as $value) {
                 $proServicePermission = $this->getProServicePermission($value['service_id']);
                 $siteProServiceArray[$value['site_id']] = $proServicePermission;
-            } 
+            }
             return $siteProServiceArray;
         }
         return [];
+    }
+
+    /**
+     * get helper of crm
+     *
+     * @param $userID, $site_id
+     * @return array
+     */
+    public function getHelperOfCrm($userID)
+    {
+        $sql = <<<EOF
+            SELECT helper_id FROM crm_helpers
+            WHERE user_id = :user_id
+EOF;
+        $query = $this->database->prepare($sql);
+        $query->execute([
+            ':user_id' => $userID,
+        ]);
+        $result = [];
+        if ($query->rowCount() > 0) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
     }
 }
