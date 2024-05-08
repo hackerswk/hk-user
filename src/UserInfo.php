@@ -274,7 +274,7 @@ EOF;
         $sql = <<<EOF
         SELECT sp.*, p.*
         FROM service_permissions sp
-        JOIN permissions p ON sp.permission_id = p.id
+        JOIN permissions p ON sp.permissions_id = p.id
         WHERE sp.service_id = :service_id
         AND p.is_enabled = 1
 EOF;
