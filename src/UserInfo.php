@@ -908,7 +908,7 @@ EOF;
         // SQL query to retrieve service IDs based on site ID
         $sql = <<<EOF
         SELECT service_id FROM site_pro_services
-        WHERE site_id = :site_id
+        WHERE site_id = :site_id AND deleted_at IS NULL
 EOF;
 
         // Prepare and execute the query
