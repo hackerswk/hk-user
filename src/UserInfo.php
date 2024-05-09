@@ -923,7 +923,7 @@ EOF;
         // Check if any records were found
         if ($query->rowCount() > 0) {
             // Fetch all rows and store the service IDs in the result array
-            $service_ids = $query->fetchAll(PDO::FETCH_COLUMN);
+            $service_ids = $query->fetchAll(PDO::FETCH_ASSOC);
             return $service_ids;
         }
 
