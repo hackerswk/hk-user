@@ -884,8 +884,8 @@ EOF;
         $all_site_permissions = [];
         foreach ($sites as $site) {
             $site_permissions = [];
-            $helper_permissions = $this->getPermissionsOfHelper($site["helper_id"]);
-            array_merge($site_permissions, $helper_permissions);
+            //$helper_permissions = $this->getPermissionsOfHelper($site["helper_id"]);
+            //array_merge($site_permissions, $helper_permissions);
             $site_pro_services = $this->getServiceIdsBySiteId($site['site_id']);
             foreach ($site_pro_services as $val) {
                 $pro_service_permissions = $this->getProServicePermission($val['service_id']);
