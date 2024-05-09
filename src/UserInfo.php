@@ -1059,7 +1059,7 @@ EOF;
     public function getProServicePermission($service_id)
     {
         $sql = <<<EOF
-        SELECT p.permission_id
+        SELECT p.id
         FROM pro_service_permissions psp
         JOIN permissions p ON psp.permissions_id = p.id
         WHERE psp.service_id = :service_id
