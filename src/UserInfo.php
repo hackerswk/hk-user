@@ -250,7 +250,7 @@ EOF;
                 }
             }
         }
-
+        /*
         if (empty($this->getHelperOfCrm($userID))) {
             $helper_rs = $this->getHelperOfCrm($userID);
             if (count($this->getPermissionsOfHelper($helper_rs["helper_id"])) > 0) {
@@ -259,7 +259,7 @@ EOF;
                 }
             }
         }
-
+        */
         return array_unique($permissions_array);
     }
 
@@ -1061,7 +1061,7 @@ EOF;
         $sql = <<<EOF
         SELECT p.permission_id
         FROM pro_service_permissions psp
-        JOIN permissions p ON psp.permission_id = p.id
+        JOIN permissions p ON psp.permissions_id = p.id
         WHERE psp.service_id = :service_id
         AND p.is_enabled = 1
 EOF;
