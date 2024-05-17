@@ -252,14 +252,14 @@ EOF;
         }
         /*
         if (empty($this->getHelperOfCrm($userID))) {
-            $helper_rs = $this->getHelperOfCrm($userID);
-            if (count($this->getPermissionsOfHelper($helper_rs["helper_id"])) > 0) {
-                foreach ($this->getPermissionsOfHelper($helper_rs["helper_id"]) as $val2) {
-                    array_push($permissions_array, $val2["permissions_id"]);
-                }
-            }
+        $helper_rs = $this->getHelperOfCrm($userID);
+        if (count($this->getPermissionsOfHelper($helper_rs["helper_id"])) > 0) {
+        foreach ($this->getPermissionsOfHelper($helper_rs["helper_id"]) as $val2) {
+        array_push($permissions_array, $val2["permissions_id"]);
         }
-        */
+        }
+        }
+         */
         return array_unique($permissions_array);
     }
 
@@ -889,9 +889,10 @@ EOF;
             $site_pro_services = $this->getServiceIdsBySiteId($site['site_id']);
             foreach ($site_pro_services as $val) {
                 $pro_service_permissions = $this->getProServicePermission($val['service_id']);
-                array_merge($site_permissions, $pro_service_permissions);
+                $site_permissions = array_merge($site_permissions, $pro_service_permissions); // 傳遞 merge 完的陣列 by Jeff
             }
-            $all_site_permissions[$site['site_id']] = array_unique($site_permissions);
+            $permissions = array_column($site_permissions, 'id'); // 把 id 從 merge 陣列中提取出來, 不然不能 unique by Jeff
+            $all_site_permissions[$site['site_id']] = array_unique($permissions);
         }
 
         return $all_site_permissions;
