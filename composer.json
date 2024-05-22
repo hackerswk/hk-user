@@ -3,7 +3,7 @@
     "description": "Get service, roles, permissions of user.",
     "type": "library",
     "require": {
-        "php": "^7.2"
+        "php": "^7.2 || ^8.0"
     },
     "license": "MIT",
     "autoload": {
