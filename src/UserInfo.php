@@ -884,15 +884,7 @@ EOF;
         $all_site_permissions = [];
         foreach ($sites as $site) {
             $site_permissions = [];
-            //$helper_permissions = $this->getPermissionsOfHelper($site["helper_id"]);
-            //array_merge($site_permissions, $helper_permissions);
-            $site_pro_services = $this->getServiceIdsBySiteId($site['site_id']);
-            foreach ($site_pro_services as $val) {
-                $pro_service_permissions = $this->getProServicePermission($val['service_id']);
-                $site_permissions = array_merge($site_permissions, $pro_service_permissions); // 傳遞 merge 完的陣列 by Jeff
-            }
-            $permissions = array_column($site_permissions, 'id'); // 把 id 從 merge 陣列中提取出來, 不然不能 unique by Jeff
-            $all_site_permissions[$site['site_id']] = array_unique($permissions);
+            $all_site_permissions[$site['site_id']] = $this->getSitePermission($site['site_id']);
         }
 
         return $all_site_permissions;
