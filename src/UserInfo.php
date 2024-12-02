@@ -1029,7 +1029,7 @@ EOF;
     public function getSitePermission($site_id)
     {
         $sql = <<<EOF
-            SELECT permission_id FROM site_permissions
+            SELECT permissions_id FROM site_permissions
             WHERE site_id = :site_id
 EOF;
         $query = $this->database->prepare($sql);
