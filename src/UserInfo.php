@@ -59,7 +59,6 @@ EOF;
                 'user_locale' => $row['locale'],
                 'user_account_type' => $this->userAccountType($this->getUserRoles($userID) ?? ''),
                 'user_roles' => $this->getUserRoles($userID) ?? [],
-                'user_role_quota' => $this->getUserPermissionsQuota($userID) ?? [],
                 'user_permissions' => $this->getUserPermissions($userID) ?? [], // Permissions for normal, black card, and helper service users
                 'site_permissions' => $this->getSitePermissions($userID) ?? [], // Permissions for pro service users
                 'user_services' => $this->getUserServices($userID) ?? '',
